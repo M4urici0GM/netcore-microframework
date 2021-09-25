@@ -5,6 +5,8 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace tests_socket_net
 {
@@ -16,7 +18,6 @@ namespace tests_socket_net
         public Dictionary<string, string> Headers { get; private set; }
         public bool IsWebsocket { get => Headers.ContainsKey("Sec-WebSocket-Key"); private set => IsWebsocket = value; }
         public string Path { get => Headers.GetValueOrDefault("path", "/"); private set => Path = value; }
-        
 
         public HttpContext()
         {}
@@ -24,9 +25,9 @@ namespace tests_socket_net
         public HttpContext(
             Stream connection,
             Encoding defaultEncoding,
-            Dictionary<string, string> httpHeaders)
+            Dictionary<string, string> httpHeaders = null)
         {
-            Headers = httpHeaders;
+            Headers = httpHeaders ?? new Dictionary<string, string>();
             Encoding = defaultEncoding;
             _connection = connection;
         }
@@ -40,7 +41,13 @@ namespace tests_socket_net
         }
 
 
-        public async Task WriteResponseAsync(HttpStatusCode statusCode, string data)
+        public Task WriteResponseAsJsonAsync(HttpStatusCode status, object data)
+        {
+            string responseStr = JsonSerializer.Serialize(data);
+            return WriteResponseAsJsonAsync(status, responseStr);
+        }
+
+        public async Task WriteResponseAsJsonAsync(HttpStatusCode statusCode, string data)
         {
             Dictionary<string, string> responseData = new()
             {

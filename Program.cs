@@ -27,7 +27,7 @@ namespace tests_socket_net
                 4 * 1024);
             
             httpServer.Listen(cancellationTokenSource.Token)
-                .Wait();
+                .Wait(cancellationTokenSource.Token);
 
             return Task.CompletedTask;
         }

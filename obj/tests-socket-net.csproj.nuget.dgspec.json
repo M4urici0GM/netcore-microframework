@@ -1,26 +1,28 @@
 {
   "format": 1,
   "restore": {
-    "/home/m4urici0gm/tests-socket-net/tests-socket-net.csproj": {}
+    "C:\\Projects\\Personal\\netcore-microframework\\tests-socket-net.csproj": {}
   },
   "projects": {
-    "/home/m4urici0gm/tests-socket-net/tests-socket-net.csproj": {
+    "C:\\Projects\\Personal\\netcore-microframework\\tests-socket-net.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/m4urici0gm/tests-socket-net/tests-socket-net.csproj",
+        "projectUniqueName": "C:\\Projects\\Personal\\netcore-microframework\\tests-socket-net.csproj",
         "projectName": "tests-socket-net",
-        "projectPath": "/home/m4urici0gm/tests-socket-net/tests-socket-net.csproj",
-        "packagesPath": "/home/m4urici0gm/.nuget/packages/",
-        "outputPath": "/home/m4urici0gm/tests-socket-net/obj/",
+        "projectPath": "C:\\Projects\\Personal\\netcore-microframework\\tests-socket-net.csproj",
+        "packagesPath": "C:\\Users\\Mauricio_Barbosa\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\Personal\\netcore-microframework\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/m4urici0gm/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Mauricio_Barbosa\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "https://api.nuget.org/v3/index.json": {}
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "http://dcsartifacts.dell.com/artifactory/api/nuget/nuget": {}
         },
         "frameworks": {
           "net5.0": {
@@ -58,7 +60,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.301/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }

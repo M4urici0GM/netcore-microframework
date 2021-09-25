@@ -14,43 +14,7 @@ using tests_socket_net.Interfaces;
 using System.Diagnostics;
 
 namespace tests_socket_net
-{    
-
-    public interface IAppConfiguration
-    {
-        
-    }
-
-
-    public interface ICertificateHandler
-    {
-        X509Certificate2 GetCertifcate();
-    }
-
-    public interface IConfigurationManager
-    {
-
-    }
-
-
-    public class CertificateHandler : ICertificateHandler
-    {
-
-        public CertificateHandler()
-        {
-            
-        }
-
-        public X509Certificate2 GetCertifcate()
-        {
-
-            return X509Certificate2.CreateFromPemFile(
-                "/home/m4urici0gm/certificates/craftworld.com.br/cert.pem",
-                "/home/m4urici0gm/certificates/craftworld.com.br/privkey.pem");
-        }
-     }
-
-
+{
     public class HttpServer
     {
         private readonly IPEndPoint _ipEndPoint;
@@ -61,6 +25,7 @@ namespace tests_socket_net
         private readonly int _bufferSize;
         private readonly IHttpHandlerService _httpHandlerService;
         private readonly ICertificateHandler _certificateHandler;
+        private readonly bool _sslEnabled;
     
 
         public HttpServer(
@@ -68,7 +33,8 @@ namespace tests_socket_net
             Encoding defaultEncoding,
             ILogger logger,
             int maxBacklog,
-            int maxBufferSize)
+            int maxBufferSize,
+            bool sslEnabled = false)
         {
             _bufferSize = maxBufferSize;
             _ipEndPoint = ipEndPoint;
@@ -77,6 +43,7 @@ namespace tests_socket_net
             _logger = logger;
             _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             _certificateHandler = new CertificateHandler();
+            _sslEnabled = sslEnabled;
         }
 
         private bool IsValidRequestMethod(string requestStr)
@@ -121,15 +88,16 @@ namespace tests_socket_net
 
             return httpHeaders;
         }
+        
 
-        private async Task<SslStream> AcceptSslSocket(Socket socket, CancellationToken cancellationToken)
+        private async Task<Stream> AcceptSocketStreamAsync(Socket socket, CancellationToken cancellationToken)
         {
             Stream socketStream = new NetworkStream(socket, false);
+            X509Certificate2 certificate = _certificateHandler.GetSelfSignedCertificate();
+            
             SslStream sslStream = new SslStream(socketStream, false);
-
             try
             {
-                X509Certificate2 certificate = _certificateHandler.GetCertifcate();
                 await sslStream.AuthenticateAsServerAsync(certificate, false, false);
                 _logger.LogInformation("Client connected.");
                 return sslStream;
@@ -142,15 +110,24 @@ namespace tests_socket_net
 
         private async Task<HttpContext> AcceptHttpRequestAsync(Stream socketStream, CancellationToken cancellationToken)
         {
-            byte[] buffer = new byte[_bufferSize];
-            await socketStream.ReadAsync(new ArraySegment<byte>(buffer), cancellationToken);
-            if (buffer.Length == 0)
-                throw new Exception("LOL");
+            try
+            {
+                byte[] buffer = new byte[_bufferSize];
+                await socketStream.ReadAsync(new ArraySegment<byte>(buffer), cancellationToken);
+                if (buffer.Length == 0)
+                    throw new Exception("LOL");
 
-            Dictionary<string, string> requestHeaders = ParseRequestHeaders(buffer, _defaultEncoding);
-            HttpContext httpContext = new HttpContext(socketStream, _defaultEncoding, requestHeaders);
+                Dictionary<string, string> requestHeaders = ParseRequestHeaders(buffer, _defaultEncoding);
+                HttpContext httpContext = new HttpContext(socketStream, _defaultEncoding, requestHeaders);
 
-            return httpContext;
+                return httpContext;
+            }
+            catch (Exception e)
+            {
+                HttpContext httpContext = new HttpContext(socketStream, _defaultEncoding);
+                await httpContext.WriteResponseAsJsonAsync(HttpStatusCode.InternalServerError, e);
+                return null;
+            }
         }
 
 
@@ -160,13 +137,19 @@ namespace tests_socket_net
             stopWatch.Start();
 
             Socket socket = await _serverSocket.AcceptAsync();
-            SslStream socketSslStream = await AcceptSslSocket(socket, cancellationToken);
+            Stream socketSslStream = await AcceptSocketStreamAsync(socket, cancellationToken);
             HttpContext httpContext = await AcceptHttpRequestAsync(socketSslStream, cancellationToken);
+            if (httpContext is null)
+            {
+                socket.Close();
+                return;
+            }
             
-            await httpContext.WriteResponseAsync(HttpStatusCode.OK, JsonConvert.SerializeObject(new {
+            await httpContext.WriteResponseAsJsonAsync(HttpStatusCode.OK, JsonConvert.SerializeObject(new {
                 message = "Hello World",
             }));
 
+            socket.Close();
             stopWatch.Stop();
             _logger.LogInformation($"{httpContext.Headers.GetValueOrDefault("http_method")} {httpContext.Path} {stopWatch.ElapsedMilliseconds}ms");
         }
@@ -178,7 +161,7 @@ namespace tests_socket_net
             _logger.LogInformation($"Server running at port {_ipEndPoint.Port}");
 
             while (!cancellationToken.IsCancellationRequested)
-                await AcceptSocketAsync(cancellationToken);
+                await Task.Run(() => AcceptSocketAsync(cancellationToken), cancellationToken);
         } 
     }
 }
