@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Microframework.Core\Microframework.Core.csproj" />
+      <ProjectReference Include="..\Microframework.Services\Microframework.Services.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microframework.Core", "Microframework.Core\Microframework.Core.csproj", "{B3185EB3-6F98-48E7-922C-7553ED0E7A62}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microframework.Services", "Microframework.Services\Microframework.Services.csproj", "{FD179603-2FB5-49EF-8D8C-853B1191FCB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Runner", "Runner\Runner.csproj", "{FD3F71EA-1FC5-461D-BF7F-73D8D1E02488}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B3185EB3-6F98-48E7-922C-7553ED0E7A62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3185EB3-6F98-48E7-922C-7553ED0E7A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD179603-2FB5-49EF-8D8C-853B1191FCB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD179603-2FB5-49EF-8D8C-853B1191FCB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD179603-2FB5-49EF-8D8C-853B1191FCB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD179603-2FB5-49EF-8D8C-853B1191FCB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD3F71EA-1FC5-461D-BF7F-73D8D1E02488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD3F71EA-1FC5-461D-BF7F-73D8D1E02488}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD3F71EA-1FC5-461D-BF7F-73D8D1E02488}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD3F71EA-1FC5-461D-BF7F-73D8D1E02488}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
