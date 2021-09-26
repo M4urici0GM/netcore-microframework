@@ -34,10 +34,13 @@ namespace tests_socket_net
 
     public class CertificateHandler : ICertificateHandler
     {
+        private const string ServerAuthenticationOid = "1.3.6.1.5.5.7.3.1";
+
         private readonly ILogger _logger;
         private readonly IProcessStatusService _processStatusService;
 
-        private ConcurrentDictionary<string, X509Certificate2> _serverCertificates;
+        
+        private readonly ConcurrentDictionary<string, X509Certificate2> _serverCertificates;
         
         public CertificateHandler(
             ILogger logger,
@@ -63,48 +66,41 @@ namespace tests_socket_net
         
         public X509Certificate2 GetSelfSignedCertificate()
         {
-            var ecdsa = ECDsa.Create();
-            if (ecdsa == null)
-                return null;
+            var ecdsa = RSA.Create();
 
-            var req = new CertificateRequest("cn=foobar", ecdsa, HashAlgorithmName.SHA256);
-            return req.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+            var req = new CertificateRequest("cn=foobar", ecdsa, HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);
+            var certificate = req.CreateSelfSigned(DateTimeOffset.Now, DateTimeOffset.Now.AddYears(1));
+            return _processStatusService.CurrentOsArchitecture == ProcessPlatform.Windows
+                ? certificate
+                : new X509Certificate2(certificate.Export(X509ContentType.Pkcs12));
         }
 
-        public X509Certificate2 GetDefaultServerCertificate()
+        public X509Certificate2 ServerCertificateSelector(string name)
         {
             
-        }
+            if (!_serverCertificates.ContainsKey(name))
+                throw new InvalidOperationException($"No certificate found with name {name}");
 
-        private X509Certificate2 ServerCertificateSelector(string name)
-        {
-            if (_serverCertificates is {Count: > 0})
-            {
-                foreach (var serverCertificate in _serverCertificates)
-                {
-                    _logger.LogDebug($"SNI Name: {name}");
-                    if (_processStatusService.CurrentOsArchitecture == ProcessPlatform.Windows)
-                        return serverCertificate.Value;
+            bool hasRetrieved = _serverCertificates.TryGetValue(name, out var certificate);
+            if (!hasRetrieved)
+                throw new Exception($"Failed to get certificate with name {name}");
 
-                    byte[] serverCertificateBuffer = serverCertificate.Value.Export(X509ContentType.Pkcs12);
-                    return new X509Certificate2(serverCertificateBuffer);
-                }
-            }
-            
-            
-            
-            
-            
-            
+            return certificate;
         }
         
 
         public X509Certificate2 GetCertificate()
         {
+            using var certStore = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            certStore.Open(OpenFlags.ReadOnly);
 
-            return X509Certificate2.CreateFromPemFile(
-                "/home/m4urici0gm/certificates/craftworld.com.br/cert.pem",
-                "/home/m4urici0gm/certificates/craftworld.com.br/privkey.pem");
+            // if (certStore.Certificates.Count == 0)
+            //     throw new Exception("No certificates found!");
+            //
+            // var certificates = certStore.Certificates.Find(X509FindType.FindBySerialNumber, "72D431BD04C267CC", true);
+            var x509Certificate2 = certStore.Certificates[0];
+
+            return x509Certificate2;
         }
     }
 }

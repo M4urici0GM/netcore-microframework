@@ -7,4 +7,4 @@ build_property.PublishSingleFile =
 build_property.IncludeAllContentForSelfExtract = 
 build_property._SupportedPlatformList = Android,iOS,Linux,macOS,Windows
 build_property.RootNamespace = tests_socket_net
-build_property.ProjectDir = C:\Projects\Personal\netcore-microframework\
+build_property.ProjectDir = /home/m4urici0gm/Projects/netcore-microframework/

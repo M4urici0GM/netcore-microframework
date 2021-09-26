@@ -12,6 +12,7 @@ using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
 using tests_socket_net.Interfaces;
 using System.Diagnostics;
+using System.Security.Authentication;
 
 namespace tests_socket_net
 {
@@ -42,7 +43,7 @@ namespace tests_socket_net
             _defaultEncoding = defaultEncoding;
             _logger = logger;
             _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            _certificateHandler = new CertificateHandler();
+            _certificateHandler = new CertificateHandler(_logger, new ProcessStatusService());
             _sslEnabled = sslEnabled;
         }
 
@@ -93,18 +94,22 @@ namespace tests_socket_net
         private async Task<Stream> AcceptSocketStreamAsync(Socket socket, CancellationToken cancellationToken)
         {
             Stream socketStream = new NetworkStream(socket, false);
-            X509Certificate2 certificate = _certificateHandler.GetSelfSignedCertificate();
+            X509Certificate2 certificate = _certificateHandler.GetCertificate();
             
             SslStream sslStream = new SslStream(socketStream, false);
             try
             {
-                await sslStream.AuthenticateAsServerAsync(certificate, false, false);
+                await sslStream.AuthenticateAsServerAsync(
+                    certificate,
+                    false,
+                    SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13,
+                    false);
                 _logger.LogInformation("Client connected.");
                 return sslStream;
             } catch (Exception ex)
             {
                 _logger.LogError($"Failed to accept socket connection: {ex.Message}");
-                return null;
+                return socketStream;
             }
         }
 
@@ -125,7 +130,7 @@ namespace tests_socket_net
             catch (Exception e)
             {
                 HttpContext httpContext = new HttpContext(socketStream, _defaultEncoding);
-                await httpContext.WriteResponseAsJsonAsync(HttpStatusCode.InternalServerError, e);
+                await httpContext.WriteResponseAsJsonAsync(HttpStatusCode.InternalServerError, new { teste = "aaa"});
                 return null;
             }
         }
@@ -137,9 +142,15 @@ namespace tests_socket_net
             stopWatch.Start();
 
             Socket socket = await _serverSocket.AcceptAsync();
-            Stream socketSslStream = await AcceptSocketStreamAsync(socket, cancellationToken);
-            HttpContext httpContext = await AcceptHttpRequestAsync(socketSslStream, cancellationToken);
-            if (httpContext is null)
+            Stream socketStream = await AcceptSocketStreamAsync(socket, cancellationToken);
+            if (socketStream == null)
+            {
+                socket.Close();
+                return;
+            }
+
+            HttpContext httpContext = await AcceptHttpRequestAsync(socketStream, cancellationToken);
+            if (httpContext == null)
             {
                 socket.Close();
                 return;

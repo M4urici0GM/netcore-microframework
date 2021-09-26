@@ -18,7 +18,7 @@ namespace tests_socket_net
             };
             
             ILogger serverLogger = new Logger();
-            IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 3333);
+            IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 8080);
             HttpServer httpServer = new HttpServer(
                 ipEndPoint,
                 Encoding.UTF8,

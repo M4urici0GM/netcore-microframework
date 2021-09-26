@@ -6,5 +6,7 @@ namespace tests_socket_net
     {
         X509Certificate2 GetCertificate();
         X509Certificate2 GetSelfSignedCertificate();
+        X509Certificate2 ServerCertificateSelector(string name);
+        X509Certificate2 AddCertificateToServer(string name, X509Certificate2 certificate);
     }
 }

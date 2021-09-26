@@ -1,28 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Projects\\Personal\\netcore-microframework\\tests-socket-net.csproj": {}
+    "/home/m4urici0gm/Projects/netcore-microframework/tests-socket-net.csproj": {}
   },
   "projects": {
-    "C:\\Projects\\Personal\\netcore-microframework\\tests-socket-net.csproj": {
+    "/home/m4urici0gm/Projects/netcore-microframework/tests-socket-net.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\Personal\\netcore-microframework\\tests-socket-net.csproj",
+        "projectUniqueName": "/home/m4urici0gm/Projects/netcore-microframework/tests-socket-net.csproj",
         "projectName": "tests-socket-net",
-        "projectPath": "C:\\Projects\\Personal\\netcore-microframework\\tests-socket-net.csproj",
-        "packagesPath": "C:\\Users\\Mauricio_Barbosa\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\Personal\\netcore-microframework\\obj\\",
+        "projectPath": "/home/m4urici0gm/Projects/netcore-microframework/tests-socket-net.csproj",
+        "packagesPath": "/home/m4urici0gm/.nuget/packages/",
+        "outputPath": "/home/m4urici0gm/Projects/netcore-microframework/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Mauricio_Barbosa\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/m4urici0gm/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "http://dcsartifacts.dell.com/artifactory/api/nuget/nuget": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net5.0": {
@@ -60,7 +58,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/5.0.400/RuntimeIdentifierGraph.json"
         }
       }
     }
